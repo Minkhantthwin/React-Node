@@ -2,6 +2,7 @@ import {
   Box,
   Card,
   CardContent,
+  CardMedia,
   Typography,
   IconButton,
 } from '@mui/material';
@@ -14,10 +15,14 @@ import {
 
 import { green } from '@mui/material/colors';
 
-export default function Item({item, remove}) {
+import { useNavigate } from 'react-router-dom';
+
+export default function Item({item, remove, primary}) {
+  const navigate = useNavigate();
     return (
         <Card sx={{ mb: 2 }}>
-            <CardContent>
+            {primary && <Box sx={{ height: 50, bgcolor: green[500] }} />}
+            <CardContent onClick={() => navigate(`/profile/${item.id}`)} sx={{ cursor: 'pointer' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}> 
                 <Box>
                   <TimeIcon/>
@@ -26,8 +31,11 @@ export default function Item({item, remove}) {
                   </Typography>
                 </Box>
                 <IconButton
+                sx={{ color: 'text.fade' }}
                 size='small'
-                onClick={() => remove(item.id)}
+                onClick={e => { remove(item.id)
+                         e.stopPropagation();
+                }}
                 >
                   <DeleteIcon fontSize='inherit'/>
                 </IconButton>

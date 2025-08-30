@@ -10,7 +10,7 @@ import {
 } from '@mui/icons-material';
 
 export default function Header() {
-    const { showForm, setShowForm, mode, setMode } = useApp();
+    const { showForm, setShowForm, mode, setMode, setShowDrawer} = useApp();
 
     return (
         <AppBar position="static">
@@ -19,7 +19,8 @@ export default function Header() {
                     edge="start"
                     color="inherit"
                     aria-label="menu"
-                    sx={{ mr: 2 }}                    
+                    sx={{ mr: 2 }}
+                    onClick={() => setShowDrawer(true)}                    
                 >
                     <MenuIcon />
                 </IconButton>
