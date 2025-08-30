@@ -1,6 +1,8 @@
 // filepath: d:\React\React-Node\mkt-project\src\ThemedApp.jsx
 import { useState, createContext, useContext, useMemo} from "react";
 
+import {} from "@tanstack/react-query";
+
 import {
     CssBaseline,
     ThemeProvider,
@@ -15,7 +17,11 @@ import router from "./router";
 
 import { deepPurple, grey } from "@mui/material/colors";
 
+import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
+
 export const AppContext = createContext();
+
+export const queryClient = new QueryClient();
 
 export function useApp() {
     return useContext(AppContext);
@@ -49,7 +55,9 @@ export default function ThemedApp() {
              auth, setAuth,
              globalMsg, setGlobalMsg
         }}>
+        <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
+        </QueryClientProvider>
         <CssBaseline />
         </AppContext.Provider>
         </ThemeProvider>

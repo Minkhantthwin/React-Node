@@ -1,22 +1,24 @@
-import { useState } from "react";
-
-import { Box } from "@mui/material";
+import { Box, Alert } from "@mui/material";
 
 import Form from "../components/Form";
 import Item from "../components/Item";
 
 import { useApp } from "../ThemedApp";
+import { useQuery } from "@tanstack/react-query";
+
+const api = import.meta.env.VITE_API;
 
 export default function Home() {
 
   const { showForm, setGlobalMsg } = useApp();
-
-  const [data, setData] = useState([
-    {id: 1, content: 'Item 1', name: 'Name 1'},
-    {id: 2, content: 'Item 2', name: 'Name 2'},
-    {id: 3, content: 'Item 3', name: 'Name 3'},
-  ]);
-
+  const { data, error, isLoading, isError } = useQuery({
+    queryKey: ['posts'],
+    queryFn: async () => {
+      const res = await fetch(`${api}/content/posts`);
+      if (!res.ok) throw new Error('Failed to fetch posts');
+      return res.json();
+    },
+  });
 
   const remove = (id) => {
     setData(data.filter(item => item.id !== id));
@@ -28,6 +30,23 @@ export default function Home() {
     setData([...data, {id, content, name}]);
     setGlobalMsg('Item added');
   };
+
+  if (isError) {
+    return (
+     <Box>
+      <Alert severity="warning">{error.message}</Alert>
+      </Box>
+     );
+    }
+  
+  if (isLoading) {
+    return (
+     <Box>
+      <Alert severity="info">Loading....</Alert>
+      </Box>
+     );
+    }
+    
     return (
         <Box>
             {showForm && <Form add={add} />}
