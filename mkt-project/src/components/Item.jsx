@@ -21,6 +21,17 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Item({item, remove, primary}) {
   const navigate = useNavigate();
+
+  const formattedTime = item.createdAt
+    ? (() => {
+        try {
+          return formatRelative(new Date(item.createdAt), new Date());
+        } catch {
+          return 'Invalid date';
+        }
+      })()
+    : 'Unknown time';
+
     return (
         <Card sx={{ mb: 2 }}>
             {primary && <Box sx={{ height: 50, bgcolor: green[500] }} />}
@@ -29,14 +40,15 @@ export default function Item({item, remove, primary}) {
                 <Box>
                   <TimeIcon/>
                   <Typography variant='caption' sx={{ color: green[500]}}>
-                    {formatRelative(item.createdAt, new Date())}
+                   {formattedTime}
                   </Typography>
                 </Box>
                 <IconButton
                 sx={{ color: 'text.fade' }}
                 size='small'
-                onClick={e => { remove(item.id)
-                         e.stopPropagation();
+                onClick={e => {
+                  e.stopPropagation(); 
+                  remove.mutate(item.id);       
                 }}
                 >
                   <DeleteIcon fontSize='inherit'/>
@@ -47,7 +59,7 @@ export default function Item({item, remove, primary}) {
                 <Box 
                 sx={{ display: 'flex',flexDirection: "row", alignItems: 'center', gap: 1 }}>
                   <UserIcon fontSize='12' color='info'/>
-                  <Typography variant='caption'>{item.author.name}</Typography>
+                  <Typography variant='caption'>{item.author?.name || 'Unknown Author'}</Typography>
                 </Box>
             </CardContent>
         </Card>

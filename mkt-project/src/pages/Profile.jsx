@@ -3,6 +3,8 @@ import { pink } from "@mui/material/colors";
 
 import Item from "../components/Item";
 
+import { formatRelative } from 'date-fns';
+
 export default function Profile() {
     return (
         <Box>
