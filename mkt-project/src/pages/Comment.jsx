@@ -1,9 +1,10 @@
-import { Box, TextField, Button } from "@mui/material";
+import { Box, TextField, Button, Alert } from "@mui/material";
 import Item from "../components/Item";
 
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, useApp } from "../ThemedApp";
+import { use } from "react";
 
 const api = import.meta.env.VITE_API;
 
@@ -21,7 +22,30 @@ export default function Comment() {
             return res.json();
         },
     });
-    const remove = useMutation({
+    const removePost = useMutation({
+        mutationFn: async (id) => {
+            const res = await fetch(`${api}/content/posts/${id}`, {
+                method: 'DELETE',
+            });
+            if (!res.ok) throw new Error('Failed to delete post');
+            return res.json();
+        },
+        onMutate: (id) => {
+            queryClient.cancelQueries({ queryKey: ["posts", id] });
+            queryClient.setQueryData(['posts', id], old => old.filter(item => item.id !== id));
+            setGlobalMsg('Deleting post...');
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["posts", id] });
+            setGlobalMsg('Post deleted');
+            navigate('/');
+        },
+        onError: (error) => {
+            setGlobalMsg(error.message);
+        },
+    });
+
+    const removeComment = useMutation({
         mutationFn: async (id) => {
             const res = await fetch(`${api}/content/comments/${id}`, {
                 method: 'DELETE',
@@ -43,27 +67,27 @@ export default function Comment() {
         },
     });
 
+    if (isError){
+        return <Box><Alert severity="warning">{error.message}</Alert></Box>;
+    }
+    if (isLoading){
+        return <Box sx={{textAlign: "center"}}>Loading...</Box>;
+    }
+
     return (
         <Box>
             <Item
-                primary
-                key={1}
-                remove={() => {}}
-                item={{
-                    id: 1,
-                    name: 'User 1',
-                    content: 'This is my first comment',
-                }}
+               primary
+               item = {data}
+               remove={removePost.mutate}
             />
-            <Item
-                key={2}
-                remove={() => {}}
-                item={{
-                    id: 2,
-                    name: 'User 2',
-                    content: 'This is my second comment',
-                }}
-            />
+            {data.comments.map(comment => (
+                <Item
+                   key={comment.id}
+                   item = {{...comment, post: data.id}}
+                   remove={removeComment.mutate}
+                />
+            ))}
             <form>
                 <Box sx={{ display:'flex', gap: 1, mt: 2, flexDirection: 'column' }}>
                     <TextField

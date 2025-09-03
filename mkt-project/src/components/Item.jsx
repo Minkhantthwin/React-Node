@@ -19,7 +19,7 @@ import { formatRelative } from 'date-fns';
 
 import { useNavigate } from 'react-router-dom';
 
-export default function Item({item, remove, primary}) {
+export default function Item({item, remove, primary, comment}) {
   const navigate = useNavigate();
 
   const formattedTime = item.createdAt
@@ -35,7 +35,7 @@ export default function Item({item, remove, primary}) {
     return (
         <Card sx={{ mb: 2 }}>
             {primary && <Box sx={{ height: 50, bgcolor: green[500] }} />}
-            <CardContent onClick={() => navigate(`/profile/${item.id}`)} sx={{ cursor: 'pointer' }}>
+            <CardContent onClick={() => { if (comment) return false; navigate(`/comment/${item.id}`);}} sx={{ cursor: 'pointer' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}> 
                 <Box>
                   <TimeIcon/>
