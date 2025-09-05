@@ -1,5 +1,6 @@
 // filepath: d:\React\React-Node\mkt-project\src\ThemedApp.jsx
-import { useState, createContext, useContext, useMemo} from "react";
+import { useState, createContext, useContext, useMemo, useEffect} from "react";
+import { fetchVerify } from "./libs/fetcher";
 
 import {} from "@tanstack/react-query";
 
@@ -18,10 +19,12 @@ import router from "./router";
 import { deepPurple, grey } from "@mui/material/colors";
 
 import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
+import { use } from "react";
 
 export const AppContext = createContext();
 
 export const queryClient = new QueryClient();
+
 
 export function useApp() {
     return useContext(AppContext);
@@ -33,6 +36,13 @@ export default function ThemedApp() {
     const [auth, setAuth] = useState(null);
     const [globalMsg, setGlobalMsg] = useState(null);
     const [mode, setMode] = useState('dark');
+
+    useEffect(() => {
+    fetchVerify().then(user => {
+        if (user) 
+            setAuth(user);
+        });
+    }, []);
 
     const theme = useMemo(() => { return createTheme({
         palette: { 

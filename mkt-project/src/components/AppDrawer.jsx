@@ -38,7 +38,7 @@ export default function AppDrawer() {
                             color: '#fff',
                             bgcolor: deepPurple[500] 
                             }}/>
-                        <Typography sx={{ fontWeight: "bold"}}>Me</Typography>
+                        <Typography sx={{ fontWeight: "bold"}}>{auth ? auth.name: "Guest"}</Typography>
                     </Box>
                 </Box>
                 <List sx={{ pt: 4 }}>
@@ -58,7 +58,7 @@ export default function AppDrawer() {
                     <>
                      <ListItem>
                         <ListItemButton onClick={() => {
-                            navigate('/profile/1');
+                            navigate('/profile/' + auth.id);
                             setShowDrawer(false);
                         }}>
                             <ListItemIcon>

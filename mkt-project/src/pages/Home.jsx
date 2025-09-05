@@ -79,7 +79,7 @@ export default function Home() {
     
     return (
         <Box>
-            {showForm && <Form add={add} />}
+            {showForm && auth && <Form add={add} />}
             {data.map(item => (
                 <Item key={item.id} item={item} remove={remove} />
             ))}

@@ -1,5 +1,6 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const router = express.Router();
 
 const prisma = require('../prismaClient');
@@ -48,6 +49,26 @@ router.post('/users', async (req, res) => {
         data: { name, username, email, password: hash, bio },
     });
     res.status(201).json(user);
+});
+
+router.post('/login', async (req, res) => {
+    const { username, password } = req.body;
+    if (!username || !password) {
+        return res.status(400).json({ msg: 'username & password required' });
+    }
+    const user = await prisma.user.findUnique({
+        where: { username: username },
+    });
+    if (!user) {
+        return res.status(401).json({ msg: 'Invalid username or password' });
+    }
+    else {
+      const isValid = await bcrypt.compare(password, user.password);
+      if (isValid) {
+        const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: '1h' });
+        return res.json({ msg: 'Login successful', token, user });
+      }
+    }
 });
 
 module.exports = { userRouter: router };
